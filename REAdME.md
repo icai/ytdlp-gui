@@ -34,8 +34,8 @@ pipenv install
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/icai/video-downloader.git
-cd video-downloader
+git clone https://github.com/icai/ytdlp-gui.git
+cd ytdlp-gui
 ```
 
 ### Step 2: Configure the App
