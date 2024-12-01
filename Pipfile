@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pip_conf_index_global"
+
+[packages]
+yt-dlp = "*"
+streamlit = "*"
+pyyaml = "*"
+
+[dev-packages]
+
+[scripts]
+start= "streamlit run app.py"
+
+[requires]
+python_version = "3.12"
