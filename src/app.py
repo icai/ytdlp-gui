@@ -156,7 +156,8 @@ def filter_formats(formats, platform, video=True):
         if video:
             return [
                 f for f in formats if 'height' in f and f['height'] in [480, 720, 1080]
-                and 'vcodec' in f and f.get('ext', '') == 'mp4' and f.get('filesize', 0) > 0
+                # downloader_options: { http_chunk_size: 10485760 },
+                and 'vcodec' in f and f.get('ext', '') == 'mp4' and (f.get('filesize', 0) > 0 or f.get('downloader_options', {}).get('http_chunk_size', 0) > 0)
             ]
         else:
             return [
@@ -182,6 +183,14 @@ def format_size(size):
             return f"{size:.2f} {unit}"
         size /= 1024.0
     return size
+
+def get_format_details(f, is_video=True):
+    ext = f.get('ext', 'unknown').upper()
+    format_id = f.get('format_id', 'N/A')
+    filesize = f.get('filesize', None) or f.get('downloader_options', {}).get('http_chunk_size', 0)
+    height = f.get('height', 'N/A') if is_video else None
+    return f"{format_id} - {ext}, {height}p, {format_size(filesize)}" if is_video else f"{format_id} - {ext}, {format_size(filesize)}"
+
 
 # Streamlit UI
 def main():
@@ -252,6 +261,10 @@ def main():
 
             formats, title, description = get_video_formats(url, proxy_input, ydl_opts)
 
+            # if debug output formats to debug.js
+            with open('debug.js', 'w') as f:
+                f.write(str(formats))
+
             if formats:
                 st.subheader("Video Title")
                 st.write(title)
@@ -264,26 +277,33 @@ def main():
                 video_formats = filter_formats(formats, platform, video=True)
                 audio_formats = filter_formats(formats, platform, video=False)
 
-                video_format_options = [
-                    f"{f.get('format_id', 'N/A')} - {f.get('ext', 'unknown').upper()}, {f.get('height', 'N/A')}p, {format_size(f.get('filesize', None))}"
-                    for f in video_formats
-                ]
-                audio_format_options = [
-                    f"{f.get('format_id', 'N/A')} - {f.get('ext', 'unknown').upper()}, {format_size(f.get('filesize', None))}"
-                    for f in audio_formats
-                ]
+                # video_format_options = [
+                #     get_format_details(f, is_video=True)
+                #     for f in video_formats
+                # ]
 
-                download_type = st.radio("Select download type", ("Video", "Audio"), index=0)
+                # audio_format_options = [
+                #     get_format_details(f, is_video=False)
+                #     for f in audio_formats
+                # ]
+                format_options = [
+                    get_format_details(f, is_video=True) for f in video_formats
+                ] + [
+                    get_format_details(f, is_video=False) for f in audio_formats
+                ]
+                selected_format = st.radio("Select the download", format_options)
 
-                if download_type == "Video":
-                    selected_format = st.radio("Select the video quality", video_format_options)
-                elif download_type == "Audio":
-                    if not audio_formats:
-                        st.error("No audio formats available for this platform.")
-                    else:
-                        selected_format = st.selectbox("Select the audio quality", audio_format_options)
-                else:
-                    selected_format = st.radio("Select the video quality", video_format_options)
+                # download_type = st.radio("Select download type", ("Video", "Audio"), index=0)
+
+                # if download_type == "Video":
+                #     selected_format = st.radio("Select the download", format_options)
+                # elif download_type == "Audio":
+                #     if not audio_formats:
+                #         st.error("No audio formats available for this platform.")
+                #     else:
+                #         selected_format = st.selectbox("Select the audio quality", audio_format_options)
+                # else:
+                #     selected_format = st.radio("Select the video quality", video_format_options)
                 if selected_format:
                     selected_format_code = selected_format.split(" - ")[0]
                     selected_format_ext = selected_format.split(" - ")[1].split(",")[0].lower()
@@ -305,3 +325,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
