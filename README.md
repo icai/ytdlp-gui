@@ -47,10 +47,9 @@ A sample `config.yaml` looks like this:
 ```yaml
 # config.yaml
 download_directory: 'downloads'  # Directory where videos will be saved
-proxy_list:  # List of proxy URLs for downloading
-  - 'http://127.0.0.1:7890'
+proxytp://127.0.0.1:7890'
 yt_dlp_options:  # Custom yt-dlp options
-  format: 'bestaudio/best'
+  format: 'bestvideo+bestaudio/best'
   noplaylist: True
   quiet: True
 ```
@@ -85,13 +84,13 @@ This will launch the app in your browser (typically at `http://localhost:8501`).
 
 - You can adjust the download directory by changing the `download_directory` in `config.yaml`.
 - You can add or update proxy URLs in the `proxy_list` to handle geo-restricted downloads.
-- You can modify the `yt_dlp_options` section to set custom download settings (e.g., preferred formats, quality, etc.).
+- You can modify the `yt_dlp_options` sectiproxycustom download settings (e.g., preferred formats, quality, etc.).
 
 ## Troubleshooting
 
 - **Missing `config.yaml`**: If the `config.yaml` file is missing, the app will automatically generate a new one with default settings. Ensure the file is located in the same directory as the script.
 - **Slow Download Speeds**: If you're experiencing slow download speeds, try adding proxies to the `proxy_list` section in `config.yaml`.
-
+proxy
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

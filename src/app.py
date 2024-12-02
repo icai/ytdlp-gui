@@ -18,11 +18,10 @@ def main():
 
   with st.sidebar:
     st.title('Configuration Settings')
-
     st.subheader('Proxy Settings')
     proxy_input = st.text_input('Proxy URL', config['proxy'], key='proxy_input')
     if proxy_input != config['proxy']:
-      update_config('proxy_list', [proxy_input])
+      update_config('proxy', proxy_input)
       st.success('Proxy updated in config.yaml')
 
     st.subheader('Download Directory')
@@ -32,14 +31,30 @@ def main():
       st.success('Download directory updated in config.yaml')
 
     st.subheader('yt-dlp Options')
-    format_option = st.text_input('yt-dlp Format Options', str(config['ydl_opts']), key='format_option')
-    if format_option != str(config['ydl_opts']):
-      try:
-        new_ydl_opts = eval(format_option)
-        update_config('yt_dlp_options', new_ydl_opts)
-        st.success('yt-dlp options updated in config.yaml')
-      except BaseException:
-        st.error('Invalid yt-dlp options format. Please enter a valid Python dictionary.')
+
+    # yt_dlp_options loop key config
+
+    format_option = st.text_input('yt-dlp Format', str(config['ydl_opts']['format']), key='format_option')
+    if format_option != str(config['ydl_opts']['format']):
+      update_config('yt_dlp_options.format', format_option)
+      st.success('yt-dlp format updated in config.yaml')
+    noplaylist_option = st.checkbox('noplaylist', config['ydl_opts']['noplaylist'], key='noplaylist_option')
+    if noplaylist_option != config['ydl_opts']['noplaylist']:
+      update_config('yt_dlp_options.noplaylist', noplaylist_option)
+      st.success('yt-dlp noplaylist updated in config.yaml')
+    quiet_option = st.checkbox('quiet', config['ydl_opts']['quiet'], key='quiet_option')
+    if quiet_option != config['ydl_opts']['quiet']:
+      update_config('yt_dlp_options.quiet', quiet_option)
+      st.success('yt-dlp quiet updated in config.yaml')
+
+    # format_option = st.text_input('yt-dlp Format Options', str(config['ydl_opts']), key='format_option')
+    # if format_option != str(config['ydl_opts']):
+    #   try:
+    #     new_ydl_opts = eval(format_option)
+    #     update_config('yt_dlp_options', new_ydl_opts)
+    #     st.success('yt-dlp options updated in config.yaml')
+    #   except BaseException:
+    #     st.error('Invalid yt-dlp options format. Please enter a valid Python dictionary.')
 
   url = st.text_input('Enter the video URL', '')
 

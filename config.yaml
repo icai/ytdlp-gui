@@ -1,10 +1,7 @@
-download_directory: 'downloads'  # Directory where videos will be saved
-proxy_list:  # List of proxy URLs for downloading
-  - 'http://127.0.0.1:7890'
-
-langconvert: 'zh-cn'
-yt_dlp_options:  # Custom yt-dlp options
-  format: 'bestaudio/best'
-  noplaylist: True
-  quiet: True
-
+download_directory: downloads
+langconvert: zh-cn
+proxy: http://127.0.0.1:7890
+yt_dlp_options:
+  format: bestvideo+bestaudio/best
+  noplaylist: true
+  quiet: true
