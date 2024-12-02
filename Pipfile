@@ -1,17 +1,21 @@
 [[source]]
 url = "https://pypi.org/simple"
 verify_ssl = true
-name = "pip_conf_index_global"
+name = "ytdlp-gui"
 
 [packages]
-yt-dlp = "*"
 streamlit = "*"
+yt-dlp = "*"
 pyyaml = "*"
+zhconv = "*"
 
 [dev-packages]
+ruff = "*"
 
 [scripts]
-start= "streamlit run app.py"
+start= "streamlit run run.py"
+lint = "ruff check"
+format = "ruff format"
 
 [requires]
 python_version = "3.12"

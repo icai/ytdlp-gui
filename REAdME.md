@@ -77,9 +77,9 @@ This will launch the app in your browser (typically at `http://localhost:8501`).
 ## Example Usage
 
 1. **YouTube**:
-   - Enter a YouTube video URL like `https://www.youtube.com/watch?v=dQw4w9WgXcQ`
+   - Enter a YouTube video URL like `https://www.youtube.com/watch?v=pWNiH1LEtYQ&ab_channel=TVB%E7%B6%9C%E8%97%9D`
 2. **TikTok**:
-   - Enter a TikTok video URL like `https://www.tiktok.com/@exampleuser/video/1234567890123456789`
+   - Enter a TikTok video URL like `https://www.tiktok.com/@craigmaddix/video/7426976337669246216`
 
 ## Customization
 
