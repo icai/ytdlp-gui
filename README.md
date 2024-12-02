@@ -83,13 +83,13 @@ This will launch the app in your browser (typically at `http://localhost:8501`).
 ## Customization
 
 - You can adjust the download directory by changing the `download_directory` in `config.yaml`.
-- You can add or update proxy URLs in the `proxy_list` to handle geo-restricted downloads.
+- You can add or update proxy URLs in the `proxy` to handle geo-restricted downloads.
 - You can modify the `yt_dlp_options` sectiproxycustom download settings (e.g., preferred formats, quality, etc.).
 
 ## Troubleshooting
 
 - **Missing `config.yaml`**: If the `config.yaml` file is missing, the app will automatically generate a new one with default settings. Ensure the file is located in the same directory as the script.
-- **Slow Download Speeds**: If you're experiencing slow download speeds, try adding proxies to the `proxy_list` section in `config.yaml`.
+- **Slow Download Speeds**: If you're experiencing slow download speeds, try adding proxies to the `proxy` section in `config.yaml`.
 proxy
 ## License
 
