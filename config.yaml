@@ -1,6 +1,6 @@
 download_directory: downloads
 langconvert: zh-cn
-proxy: http://127.0.0.1:7890
+proxy: 'http://127.0.0.1:7890'
 yt_dlp_options:
   format: bestvideo+bestaudio/best
   noplaylist: true

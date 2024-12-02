@@ -47,7 +47,7 @@ A sample `config.yaml` looks like this:
 ```yaml
 # config.yaml
 download_directory: 'downloads'  # Directory where videos will be saved
-proxytp://127.0.0.1:7890'
+proxy: 'http://127.0.0.1:7890'
 yt_dlp_options:  # Custom yt-dlp options
   format: 'bestvideo+bestaudio/best'
   noplaylist: True
