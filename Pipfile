@@ -4,16 +4,17 @@ verify_ssl = true
 name = "ytdlp-gui"
 
 [packages]
-streamlit = "*"
-yt-dlp = "*"
-pyyaml = "*"
-zhconv = "*"
+streamlit = ">=1.40.2"
+yt-dlp = ">=2024.12.6"
+pyyaml = ">=6.0.2"
+zhconv = ">=1.4.3"
+toml = ">=0.10.2"
 
 [dev-packages]
-ruff = "*"
+ruff = ">=0.8.2"
 
 [scripts]
-start= "streamlit run run.py"
+start = "streamlit run run.py"
 lint = "ruff check"
 format = "ruff format"
 
