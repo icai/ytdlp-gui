@@ -9,147 +9,152 @@ import zhconv
 
 
 def main():
-  st.set_page_config(page_title='YTDLP GUI Downloader', page_icon='🎥', layout='wide')
+    st.set_page_config(page_title='YTDLP GUI Downloader', page_icon='🎥', layout='wide')
 
-  config = get_config()
+    # Initialize session state
+    if 'config' not in st.session_state:
+        st.session_state.config = get_config()
 
-  st.title('YTDLP GUI Downloader')
-  st.write('This app allows you to download videos from YouTube and TikTok.')
+    if 'selected_video_formats' not in st.session_state:
+        st.session_state.selected_video_formats = []
 
-  with st.sidebar:
-    st.title('Configuration Settings')
-    st.subheader('Proxy Settings')
-    proxy_input = st.text_input('Proxy URL', config['proxy'], key='proxy_input')
-    if proxy_input != config['proxy']:
-      update_config('proxy', proxy_input)
-      st.success('Proxy updated in config.yaml')
+    if 'selected_audio_formats' not in st.session_state:
+        st.session_state.selected_audio_formats = []
 
-    st.subheader('Download Directory')
-    download_dir_input = st.text_input('Download Directory', config['download_dir'], key='download_dir_input')
-    if download_dir_input != config['download_dir']:
-      update_config('download_directory', download_dir_input)
-      st.success('Download directory updated in config.yaml')
+    if 'video_info' not in st.session_state:
+        st.session_state.video_info = None
 
-    st.subheader('yt-dlp Options')
+    config = st.session_state.config
 
-    # yt_dlp_options loop key config
+    st.title('YTDLP GUI Downloader')
+    st.write('This app allows you to download videos from YouTube and TikTok.')
 
-    format_option = st.text_input('yt-dlp Format', str(config['ydl_opts']['format']), key='format_option')
-    if format_option != str(config['ydl_opts']['format']):
-      update_config('yt_dlp_options.format', format_option)
-      st.success('yt-dlp format updated in config.yaml')
-    noplaylist_option = st.checkbox('noplaylist', config['ydl_opts']['noplaylist'], key='noplaylist_option')
-    if noplaylist_option != config['ydl_opts']['noplaylist']:
-      update_config('yt_dlp_options.noplaylist', noplaylist_option)
-      st.success('yt-dlp noplaylist updated in config.yaml')
-    quiet_option = st.checkbox('quiet', config['ydl_opts']['quiet'], key='quiet_option')
-    if quiet_option != config['ydl_opts']['quiet']:
-      update_config('yt_dlp_options.quiet', quiet_option)
-      st.success('yt-dlp quiet updated in config.yaml')
+    with st.sidebar:
+        st.title('Configuration Settings')
+        st.subheader('Proxy Settings')
+        proxy_input = st.text_input('Proxy URL', config['proxy'], key='proxy_input')
+        if proxy_input != config['proxy']:
+            update_config('proxy', proxy_input)
+            st.session_state.config['proxy'] = proxy_input
+            st.success('Proxy updated in config.yaml')
 
-    # format_option = st.text_input('yt-dlp Format Options', str(config['ydl_opts']), key='format_option')
-    # if format_option != str(config['ydl_opts']):
-    #   try:
-    #     new_ydl_opts = eval(format_option)
-    #     update_config('yt_dlp_options', new_ydl_opts)
-    #     st.success('yt-dlp options updated in config.yaml')
-    #   except BaseException:
-    #     st.error('Invalid yt-dlp options format. Please enter a valid Python dictionary.')
+        st.subheader('Download Directory')
+        download_dir_input = st.text_input('Download Directory', config['download_dir'], key='download_dir_input')
+        if download_dir_input != config['download_dir']:
+            update_config('download_directory', download_dir_input)
+            st.session_state.config['download_dir'] = download_dir_input
+            st.success('Download directory updated in config.yaml')
 
-  url = st.text_input('Enter the video URL', '')
+        st.subheader('yt-dlp Options')
+        format_option = st.text_input('yt-dlp Format', str(config['ydl_opts']['format']), key='format_option')
+        if format_option != str(config['ydl_opts']['format']):
+            update_config('yt_dlp_options.format', format_option)
+            st.session_state.config['ydl_opts']['format'] = format_option
+            st.success('yt-dlp format updated in config.yaml')
 
-  if url:
-    platform = is_valid_url(url)
-    if platform:
-      st.write(f'Fetching video information for {platform}...')
+        noplaylist_option = st.checkbox('noplaylist', config['ydl_opts']['noplaylist'], key='noplaylist_option')
+        if noplaylist_option != config['ydl_opts']['noplaylist']:
+            update_config('yt_dlp_options.noplaylist', noplaylist_option)
+            st.session_state.config['ydl_opts']['noplaylist'] = noplaylist_option
+            st.success('yt-dlp noplaylist updated in config.yaml')
 
-      downloader = Downloader(url, config['proxy'], config['download_dir'], config['ydl_opts'])
-      formats, title, description = downloader.get_video_formats()
+        quiet_option = st.checkbox('quiet', config['ydl_opts']['quiet'], key='quiet_option')
+        if quiet_option != config['ydl_opts']['quiet']:
+            update_config('yt_dlp_options.quiet', quiet_option)
+            st.session_state.config['ydl_opts']['quiet'] = quiet_option
+            st.success('yt-dlp quiet updated in config.yaml')
 
-      if formats:
+    url = st.text_input('Enter the video URL', '', key='url_input')
+
+    if url:
+        if 'url_processed' not in st.session_state or st.session_state.url_processed != url:
+            platform = is_valid_url(url)
+            if platform:
+                st.write(f'Fetching video information for {platform}...')
+                downloader = Downloader(url, config['proxy'], config['download_dir'], config['ydl_opts'])
+                formats, title, description = downloader.get_video_formats()
+
+                if formats:
+                    st.session_state.video_info = {
+                        'formats': formats,
+                        'title': title,
+                        'description': description,
+                        'platform': platform
+                    }
+                    st.session_state.url_processed = url
+                else:
+                    st.error('No formats available for the provided URL.')
+            else:
+                st.error('Invalid URL. Please enter a valid YouTube or TikTok URL.')
+
+    if st.session_state.video_info:
+        video_info = st.session_state.video_info
         st.subheader('Video Title')
-        #  if config langconvert == zh-cn
-
+        title = video_info['title']
         if config['langconvert'] == 'zh-cn':
-          title = zhconv.convert(title, 'zh-cn')
-          st.write(title)
-        else:
-          st.write(title)
+            title = zhconv.convert(title, 'zh-cn')
+        st.write(title)
 
         st.subheader('Video Description')
+        description = video_info['description']
         if config['langconvert'] == 'zh-cn':
-          description = zhconv.convert(description, 'zh-cn')
-          st.write(description)
-        else:
-          st.write(description)
-        st.write('Available formats:')
+            description = zhconv.convert(description, 'zh-cn')
+        st.write(description)
 
-        # Use filter_formats here
-        video_formats = filter_formats(formats, platform, video=True)
-        audio_formats = filter_formats(formats, platform, video=False)
+        st.subheader('Available Formats')
+        formats = video_info['formats']
+        video_formats = filter_formats(formats, video_info['platform'], video=True)
+        audio_formats = filter_formats(formats, video_info['platform'], video=False)
 
         st.write('Video Formats:')
         video_format_options = [get_format_details(f) for f in video_formats]
-        video_selections = {f: st.checkbox(f, key=f) for f in video_format_options}
+        for f in video_format_options:
+            st.session_state.selected_video_formats.append(
+                st.checkbox(f, key=f, value=f in st.session_state.selected_video_formats)
+            )
 
         st.write('Audio Formats:')
         audio_format_options = [get_format_details(f) for f in audio_formats]
-        audio_selections = {f: st.checkbox(f, key=f) for f in audio_format_options}
+        for f in audio_format_options:
+            st.session_state.selected_audio_formats.append(
+                st.checkbox(f, key=f, value=f in st.session_state.selected_audio_formats)
+            )
 
-        if any(video_selections.values()) or any(audio_selections.values()):
-          st.write('You can download the selected formats by clicking the Download button.')
-          st.write(
-            'You can also download and merge the selected video and audio formats by clicking the Download and Merge button.'
-          )
+        if st.button('Download'):
+            downloader = Downloader(url, config['proxy'], config['download_dir'], config['ydl_opts'])
+            for selected_format in st.session_state.selected_video_formats:
+                if selected_format:
+                    format_code = selected_format.split(' - ')[0]
+                    format_ext = selected_format.split(' - ')[1].split(',')[0].lower()
+                    downloader.download_video(video_info['title'], format_ext, format_code)
 
-        # make buttons inline
+            for selected_format in st.session_state.selected_audio_formats:
+                if selected_format:
+                    format_code = selected_format.split(' - ')[0]
+                    format_ext = selected_format.split(' - ')[1].split(',')[0].lower()
+                    downloader.download_video(video_info['title'], format_ext, format_code)
 
-        c = st.container()
-        if c.button('Download', key='download_button'):
-          for selected_format, is_selected in video_selections.items():
-            if is_selected:
-              format_code = selected_format.split(' - ')[0]
-              format_ext = selected_format.split(' - ')[1].split(',')[0].lower()
-              downloader.download_video(title, format_ext, format_code)
+        if st.button('Download and Merge'):
+            if st.session_state.selected_video_formats and st.session_state.selected_audio_formats:
+                video_format_code = st.session_state.selected_video_formats[0].split(' - ')[0]
+                audio_format_code = st.session_state.selected_audio_formats[0].split(' - ')[0]
+                try:
+                    with tempfile.TemporaryDirectory() as temp_dir:
+                        video_path = downloader.download_video(video_info['title'], 'mp4', video_format_code)
+                        audio_path = downloader.download_video(video_info['title'], 'm4a', audio_format_code)
 
-          for selected_format, is_selected in audio_selections.items():
-            if is_selected:
-              format_code = selected_format.split(' - ')[0]
-              format_ext = selected_format.split(' - ')[1].split(',')[0].lower()
-              downloader.download_video(title, format_ext, format_code)
-
-        # Check if both video and audio are selected for merging
-        selected_video_format = next((f for f in video_selections if video_selections[f]), None)
-        selected_audio_format = next((f for f in audio_selections if audio_selections[f]), None)
-        if c.button('Download and Merge', key='merge_button'):
-          if selected_video_format and selected_audio_format:
-            video_format_code = selected_video_format.split(' - ')[0]
-            audio_format_code = selected_audio_format.split(' - ')[0]
-            try:
-              with tempfile.TemporaryDirectory() as temp_dir:
-                video_path = downloader.download_video(title, 'mp4', video_format_code)
-                audio_path = downloader.download_video(title, 'm4a', audio_format_code)
-
-                if video_path and audio_path:
-                  merged_title = f'{downloader.get_title(title)}_merged.mp4'
-                  output_path = os.path.join(config['download_dir'], merged_title)
-                  if merge_video_audio(video_path, audio_path, output_path):
-                    st.success(f'Video and audio merged successfully: {output_path}')
-                  else:
-                    st.error('Failed to merge video and audio.')
-                else:
-                  st.error('Failed to download video or audio.')
-            except Exception as e:
-              st.error(f'Error downloading and merging: {e}')
-          else:
-            st.error('Please select both a video and audio format to merge.')
-            return
-
-      else:
-        st.error('No formats available for the provided URL.')
-    else:
-      st.error('Invalid URL. Please enter a valid YouTube or TikTok URL.')
+                        if video_path and audio_path:
+                            merged_title = f"{video_info['title']}_merged.mp4"
+                            output_path = os.path.join(config['download_dir'], merged_title)
+                            if merge_video_audio(video_path, audio_path, output_path):
+                                st.success(f'Video and audio merged successfully: {output_path}')
+                            else:
+                                st.error('Failed to merge video and audio.')
+                except Exception as e:
+                    st.error(f'Error downloading and merging: {e}')
+            else:
+                st.error('Please select both a video and audio format to merge.')
 
 
 if __name__ == '__main__':
-  main()
+    main()

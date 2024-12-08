@@ -23,7 +23,7 @@ class Downloader:
         description = info_dict.get('description', 'No description available')
         return formats, title, description
       except DownloadError as e:
-        st.error(f'Error extracting video formats: {str(e)}')
+        st.error(f'Error extracting video formats: {e!s}')
         return [], None, None
 
   def get_title(self, title):
@@ -62,13 +62,13 @@ class Downloader:
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
       try:
-        st.write(f'Downloading video to {self.download_dir}...')
+        # st.write(f'Downloading video to {self.download_dir}...')
         ydl.download([self.url])
         self.progress_bar.empty()
         self.status_text.text(f'Download completed: {filename}')
         return os.path.join(self.download_dir, filename)
       except DownloadError as e:
-        st.error(f'Error downloading video: {str(e)}')
+        st.error(f'Error downloading video: {e!s}')
       except Exception as e:
-        st.error(f'Unexpected error: {str(e)}')
+        st.error('Unexpected error: %s' % str(e))
     return None
