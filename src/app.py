@@ -166,7 +166,7 @@ def main():
             audio_path = downloader.download_video(video_info['title'], 'm4a', audio_format_code)
 
             if video_path and audio_path:
-              merged_title = f'{video_info["title"]}_merged.mp4'
+              merged_title = f'{downloader.get_title(video_info["title"])}_merged.mp4'
               output_path = os.path.join(config['download_dir'], merged_title)
               if merge_video_audio(video_path, audio_path, output_path):
                 st.success(f'Video and audio merged successfully: {output_path}')
